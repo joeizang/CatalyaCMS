@@ -103,6 +103,6 @@ namespace CatalyaCMS.Infrastructure.Services
             _repo.Add(opinion);
         }
 
-        public UserManager<SiteUser> SiteUser { get; set; }
+        public UserManager<SiteUser> SiteUser { get; set; } //this has to be initialized by DI.
     }    
 }
