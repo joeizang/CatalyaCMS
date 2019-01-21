@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using CatalyaCMS.Domain.DomainModels;
 using CatalyaCMS.Infrastructure.Abstractions;
 using CatalyaCMS.Infrastructure.Context;
+using CatalyaCMS.Infrastructure.Queries.Articles;
+using CatalyaCMS.Infrastructure.Repositories;
 
 namespace CatalyaCMS.Api
 {
@@ -27,7 +29,11 @@ namespace CatalyaCMS.Api
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
             });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            
+
+            services.AddScoped<BaseQuerySpecification<Article>, ArticleListQuerySpecification>();
+            services.AddScoped<BaseQuerySpecification<Article>, ArticleDetailQuerySpecification>();
+            services.AddScoped<IRepository<Article>, ArticleRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

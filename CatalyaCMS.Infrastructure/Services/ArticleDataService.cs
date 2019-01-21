@@ -16,7 +16,6 @@ namespace CatalyaCMS.Infrastructure.Services
     public class ArticleDataService
     {
         private readonly IRepository<Article> _repo;
-        private readonly IDomainEvent _notify;
         private IncludeParams<Article> Parameters { get; set; } = new IncludeParams<Article>
         {
             Includes = new List<Expression<Func<Article, object>>>
@@ -30,10 +29,9 @@ namespace CatalyaCMS.Infrastructure.Services
         };
 
 
-        public ArticleDataService(IRepository<Article> repo, IDomainEvent notification)
+        public ArticleDataService(IRepository<Article> repo)
         {
             _repo = repo;
-            _notify = notification;
         }
 
         public Task<List<ArticleListModel>> GetArticles(ArticleListQuerySpecification query)
