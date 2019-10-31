@@ -1,11 +1,11 @@
-FROM microsoft/dotnet:2.1.1-aspnetcore-runtime
+FROM microsoft/dotnet:3.0-aspnetcore-runtime
 
 RUN apt-get -qq update && apt-get install -y libfontconfig1
 RUN apt-get -qq update && apt-get install -y libfreetype6
 WORKDIR /cat
 EXPOSE 80
 
-FROM microsoft/dotnet:2.1-sdk AS build
+FROM microsoft/dotnet:3.0-sdk AS build
 
 WORKDIR /catsrc
 COPY CatalyaCMS.Api/CatalyaCMS.Api.csproj CatalyaCMS.Api.CatalyaCMS.Api/
