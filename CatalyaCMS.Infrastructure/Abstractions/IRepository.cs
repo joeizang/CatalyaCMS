@@ -19,9 +19,9 @@ namespace CatalyaCMS.Infrastructure.Abstractions
         IQueryable<T> Query(IncludeParams<T> param, IQuerySpecification<T> filters);
 
 
-        Task<T> FindBy(string id, CancellationToken cancelToken = default);
+        ValueTask<T> FindBy(string id, CancellationToken cancelToken = default);
 
-        Task<T> FindBy(int id, CancellationToken cancelToken = default);
+        ValueTask<T> FindBy(int id, CancellationToken cancelToken = default);
 
         Task<T> FindOne(CancellationToken cancelToken = default, params Expression<Func<T,bool>>[] predicates);
 

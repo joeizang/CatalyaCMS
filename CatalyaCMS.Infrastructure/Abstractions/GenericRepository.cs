@@ -133,13 +133,13 @@ namespace CatalyaCMS.Infrastructure.Abstractions
             return query;
         }
 
-        public Task<T> FindBy(string id, CancellationToken cancelToken = default)
+        public ValueTask<T> FindBy(string id, CancellationToken cancelToken = default)
         {
             var result = _set.FindAsync(id);
             return result;
         }
 
-        public Task<T> FindBy(int id, CancellationToken canelToken = default)
+        public ValueTask<T> FindBy(int id, CancellationToken canelToken = default)
         {
             return _set.FindAsync(id);
         }

@@ -9,6 +9,8 @@ using CatalyaCMS.Infrastructure.Abstractions;
 using CatalyaCMS.Infrastructure.Context;
 using CatalyaCMS.Infrastructure.Queries.Articles;
 using CatalyaCMS.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Hosting;
 
 namespace CatalyaCMS.Api
 {
@@ -28,7 +30,16 @@ namespace CatalyaCMS.Api
             {
                 options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
+
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<SiteDbContext>();
+
+            services.AddIdentityServer()
+                .AddApiAuthorization<ApplicationUser, SiteDbContext>();
+
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
 
             services.AddScoped<BaseQuerySpecification<Article>, ArticleListQuerySpecification>();
             services.AddScoped<BaseQuerySpecification<Article>, ArticleDetailQuerySpecification>();
@@ -37,7 +48,7 @@ namespace CatalyaCMS.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -49,7 +60,17 @@ namespace CatalyaCMS.Api
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseIdentityServer();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
+            });
         }
     }
 }

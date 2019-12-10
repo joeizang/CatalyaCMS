@@ -4,18 +4,18 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using CatalyaCMS.Domain.DomainModels;
 using CatalyaCMS.Infrastructure.EntityTypeConfiguration;
+using IdentityServer4.EntityFramework.Options;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.Extensions.Options;
 
 namespace CatalyaCMS.Infrastructure.Context
 {
-    public class SiteDbContext : DbContext
+    public class SiteDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
 
-        public SiteDbContext()
-        {
-            
-        }
-
-        public SiteDbContext(DbContextOptions<SiteDbContext> options): base(options)
+        public SiteDbContext(
+            DbContextOptions options,
+            IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
             
         }
