@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CatalyaCMS.Infrastructure.Context;
 using CatalyaCMS.Infrastructure.Services;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,12 +14,11 @@ namespace CatalyaCMS.Api.Controllers
     [ApiController]
     public class SchoolsController : ControllerBase
     {
-        private readonly SchoolsDataService _service;
+        private readonly IMediator _mediator;
 
-
-        public SchoolsController(SchoolDataService service)
+        public SchoolsController(IMediator mediator)
         {
-            _service = service;
+            _mediator = mediator;
         }
 
         // GET: api/Articles
