@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using CatalyaCMS.Domain.ApiModels;
@@ -34,27 +35,26 @@ namespace CatalyaCMS.Infrastructure.Services
             _repo = repo;
         }
 
-        public Task<List<ArticleListModel>> GetArticles(ArticleListQuerySpecification query)
+        public async Task<List<ArticleListModel>> GetArticles(ArticleListQuerySpecification query, CancellationToken token)
         {
-            
             var result = _repo.Query(Parameters, query);
 
-            var results = result.AsNoTracking().Select(x => new ArticleListModel
+            var results = await result.AsNoTracking().Select(x => new ArticleListModel
             {
                 ArticleTitle = x.Title,
                 AuthorName = x.SiteUser.AuthorName,
                 Id = x.Id,
                 PublishedDate = x.PublishDate.Value.DateTime.ToString(CultureInfo.InvariantCulture),
                 Tags = x.ArticleTags.Count
-            }).ToListAsync();
+            }).ToListAsync(token).ConfigureAwait(false);
 
             return results;
         }
 
 
-        public Task<ArticleDetailModel> GetArticle(string id, ArticleDetailQuerySpecification detailSpec)
+        public async Task<ArticleDetailModel> GetArticle(string id, ArticleDetailQuerySpecification detailSpec, CancellationToken token)
         {
-            var result = _repo.Query(Parameters, detailSpec).AsNoTracking().Select(ad => new ArticleDetailModel
+            var result = await _repo.Query(Parameters, detailSpec).AsNoTracking().Select(ad => new ArticleDetailModel
             {
                 ArticleBody = ad.Body,
                 ArticleLength = ad.Body.Count(),
@@ -65,21 +65,21 @@ namespace CatalyaCMS.Infrastructure.Services
                 NumberOfArtcileByAuthor = ad.SiteUser.Articles.Count,
                 NumberOfLikes = ad.Opinions.Count,
                 ArticleTitle = ad.Title,
-            }).SingleOrDefaultAsync();
+            }).SingleOrDefaultAsync(token).ConfigureAwait(false);
 
             return result;
         }
 
-        public async Task UpdateArticle(string id, ArticleDetailModel model)
+        public async Task UpdateArticle(string id, ArticleDetailModel model, CancellationToken token)
         {
-            var article = await _repo.FindBy(model.Id).ConfigureAwait(false);
+            var article = await _repo.FindBy(model.Id, token).ConfigureAwait(false);
             article.Body = model.ArticleBody;
             article.GetType()
                 .GetProperty(nameof(article.UpdatedDate))
-                .SetValue(article.UpdatedDate,DateTimeOffset.UtcNow);
+                ?.SetValue(article.UpdatedDate,DateTimeOffset.UtcNow);
             article.GetType()
                 .GetProperty(nameof(article.CreatedDate))
-                .SetValue(article.CreatedDate, model.CreatedOn);
+                ?.SetValue(article.CreatedDate, model.CreatedOn);
             article.Title = model.ArticleTitle;
 
             _repo.Update(article);

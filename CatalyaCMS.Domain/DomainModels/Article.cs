@@ -10,7 +10,7 @@ namespace CatalyaCMS.Domain.DomainModels
     public class Article : BaseEntity
     {
 
-        private ArticleCreateModel CreateStateTracker { get; set; }
+        private ArticleCreateModel CreateStateTracker { get; }
 
         public Article(ArticleCreateModel model)
         {

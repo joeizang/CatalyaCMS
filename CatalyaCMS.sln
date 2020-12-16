@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalyaCMS.Api", "CatalyaCM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalyaCMS.Domain", "CatalyaCMS.Domain\CatalyaCMS.Domain.csproj", "{BE27037D-7C98-48DF-AAF1-954E650A4D64}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalyaCMS.Tests", "CatalyaCMS.Tests\CatalyaCMS.Tests.csproj", "{AC010F1B-6177-4263-808D-E488115539B4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{75A188AD-8097-4D54-B4F3-D4E966288D2C}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
@@ -34,10 +32,6 @@ Global
 		{BE27037D-7C98-48DF-AAF1-954E650A4D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE27037D-7C98-48DF-AAF1-954E650A4D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE27037D-7C98-48DF-AAF1-954E650A4D64}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC010F1B-6177-4263-808D-E488115539B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC010F1B-6177-4263-808D-E488115539B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC010F1B-6177-4263-808D-E488115539B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC010F1B-6177-4263-808D-E488115539B4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
