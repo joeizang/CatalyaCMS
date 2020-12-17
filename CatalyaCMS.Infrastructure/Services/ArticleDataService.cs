@@ -93,9 +93,9 @@ namespace CatalyaCMS.Infrastructure.Services
             _repo.Add(article);
         }
 
-        public int SaveChanges()
+        public async Task<int> SaveChanges(CancellationToken token)
         {
-            return _repo.Commit();
+            return await _repo.Commit(token).ConfigureAwait(false);
         }
 
 

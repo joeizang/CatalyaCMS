@@ -14,7 +14,7 @@ namespace CatalyaCMS.Infrastructure.Abstractions
         Task<List<T>> GetListAsync(IQuerySpecification<T> query = null, CancellationToken cancelToken = default,
             params Expression<Func<T, object>>[] includes);
 
-        IQueryable<T> Query(IQuerySpecification<T> filters, Expression<Func<T, object>>[] inlcudes);
+        IQueryable<T> Query(IQuerySpecification<T> filters, params Expression<Func<T, object>>[] includes);
 
         IQueryable<T> Query(IncludeParams<T> param, IQuerySpecification<T> filters);
 

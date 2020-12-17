@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using CatalyaCMS.Domain.ApiModels;
@@ -65,7 +66,7 @@ namespace CatalyaCMS.Infrastructure.Services
             var picture = new Picture(model);
             var gallery = await _grepo.FindOne(default,
                 g => g.GalleryName.Equals(model.GalleryName, StringComparison.InvariantCultureIgnoreCase));
-            picture.Gallery = gallery;
+            picture.Gallery = gallery; //TODO: look into this implementation some more. Can be optimized some more
             _repo.Add(picture);
         }
 
@@ -91,9 +92,9 @@ namespace CatalyaCMS.Infrastructure.Services
             _repo.Remove(picture);
         }
 
-        public void SavePicture()
+        public async Task SavePicture(CancellationToken token)
         {
-            _repo.Commit();
+            await _repo.Commit(token).ConfigureAwait(false);
         }
     }
 }

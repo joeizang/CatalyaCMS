@@ -93,14 +93,14 @@ namespace CatalyaCMS.Infrastructure.Services
                 if (!string.IsNullOrEmpty(model.GalleryName) && !string.IsNullOrEmpty(model.CreatedBy))
                 {
                     GetType().GetProperty(nameof(gallery.GalleryName))
-                        .SetValue(gallery.GalleryName, model.GalleryName);
+                        ?.SetValue(gallery.GalleryName, model.GalleryName);
                     GetType().GetProperty(nameof(gallery.CreatedBy))
-                        .SetValue(gallery.CreatedBy, model.CreatedBy);
+                        ?.SetValue(gallery.CreatedBy, model.CreatedBy);
                     //Todo: look at situation where change of author is staged to be reviewed later
                     GetType().GetProperty(nameof(gallery.Description))
-                        .SetValue(gallery.Description, model.Description);
+                        ?.SetValue(gallery.Description, model.Description);
                     GetType().GetProperty(nameof(gallery.UpdatedDate))
-                        .SetValue(gallery.UpdatedDate, DateTimeOffset.UtcNow);
+                        ?.SetValue(gallery.UpdatedDate, DateTimeOffset.UtcNow);
                 }
             }
 
@@ -113,9 +113,9 @@ namespace CatalyaCMS.Infrastructure.Services
             _repo.Remove(gallery);
         }
 
-        public void SaveGallery()
+        public async Task SaveGallery(CancellationToken token)
         {
-            _repo.Commit();
+            await _repo.Commit(token).ConfigureAwait(false);
         }
     }
 }
