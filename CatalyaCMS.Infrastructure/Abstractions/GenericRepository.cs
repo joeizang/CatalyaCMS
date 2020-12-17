@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using CatalyaCMS.Domain.BaseTypes;
 using CatalyaCMS.Infrastructure.Context;
+using MoreLinq;
+using MoreLinq.Extensions;
 
 namespace CatalyaCMS.Infrastructure.Abstractions
 {
@@ -14,6 +16,8 @@ namespace CatalyaCMS.Infrastructure.Abstractions
     {
         private readonly SiteDbContext _db;
         private readonly DbSet<T> _set;
+
+        public int PageSize { get; set; } = 10;
 
         protected GenericRepository(SiteDbContext db)
         {
@@ -29,12 +33,12 @@ namespace CatalyaCMS.Infrastructure.Abstractions
         /// <param name="cancelToken"></param>
         /// <param name="includes"></param>
         /// <returns></returns>
-        public Task<List<T>> GetListAsync(IQuerySpecification<T> query = null, CancellationToken cancelToken = default,
+        public async Task<List<T>> GetListAsync(IQuerySpecification<T> query = null, CancellationToken cancelToken = default,
             params Expression<Func<T, object>>[] includes)
         {
             IQueryable<T> predicated = _set;
 
-            if (query != null && !(includes is null))
+            if (!(includes is null))
             {
                 foreach (var inc in includes)
                 {
@@ -43,37 +47,36 @@ namespace CatalyaCMS.Infrastructure.Abstractions
             }
             else if (query != null)
             {
-                predicated = _set.AsNoTracking().Where(query.Predicates.Single());
+                //predicated = _set.AsNoTracking().Where(query.Predicates.Single());
+                query.Predicates?.ForEach(p =>
+                {
+                    predicated = _set.AsNoTracking().Where(p);
+                });
                 if (query.Skip > 0 && query.Take > 0)
                     predicated = predicated.Skip(query.Skip).Take(query.Take);
-                if (!(query.OrderBy is null) || !(query.OrderByDescending is null))
+                if (query.OrderBy is null && query.OrderByDescending is null)
+                    return await predicated.ToListAsync(cancelToken).ConfigureAwait(false);
+                var sortedQuery = !(query.OrderBy is null) ? predicated.OrderBy(query.OrderBy) : predicated.OrderByDescending(query.OrderByDescending);
+
+                if (!(query.ThenBy is null))
+                    sortedQuery = sortedQuery.ThenBy(query.ThenBy);
+                else if(!(query.ThenByDescending is null))
                 {
-                    IOrderedQueryable<T> sortedQuery;
-                    if (!(query.OrderBy is null))
-                    {
-                        sortedQuery = predicated.OrderBy(query.OrderBy);
-                    }
-                    else
-                    {
-                        sortedQuery = predicated.OrderByDescending(query.OrderByDescending);
-                    }
-
-                    if (!(query.ThenBy is null))
-                        sortedQuery = sortedQuery.ThenBy(query.ThenBy);
-                    else if(!(query.ThenByDescending is null))
-                    {
-                        sortedQuery = sortedQuery.ThenByDescending(query.ThenByDescending);
-                    }
-
-                    predicated = sortedQuery;
+                    sortedQuery = sortedQuery.ThenByDescending(query.ThenByDescending);
                 }
+
+                predicated = sortedQuery;
             }
             else
             {
-                return _set.ToListAsync(cancelToken);
+                return await _set.AsNoTracking()
+                    .Skip((2*PageSize)) // use pageSize as a default when skip and take are not given.
+                    .Take(PageSize)
+                    .ToListAsync(cancelToken)
+                    .ConfigureAwait(false);
             }
 
-            return predicated.ToListAsync(cancelToken);
+            return await predicated.ToListAsync(cancelToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -83,13 +86,13 @@ namespace CatalyaCMS.Infrastructure.Abstractions
         /// <param name="inlcude"></param>
         /// <param name="filters"></param>
         /// <returns>IQueryable<T></returns>
-        public IQueryable<T> Query(IQuerySpecification<T> q, Expression<Func<T, object>> include)
+        public IQueryable<T> Query(IQuerySpecification<T> q, Expression<Func<T, object>>[] include)
         {
             IQueryable<T> query = _set;
 
             if (!(include is null))
             {
-                query = query.Include(include);
+                query = include.Aggregate(query, (current, incl) => current.Include(incl));
             }
 
 
@@ -98,10 +101,7 @@ namespace CatalyaCMS.Infrastructure.Abstractions
                 return query;
             }
 
-            foreach (var filter in q.Predicates)
-            {
-                query = query.Where(filter);
-            }
+            query = q.Predicates.Aggregate(query, (sequence, filter) => sequence.Where(filter));
 
             return query;
         }
@@ -133,15 +133,18 @@ namespace CatalyaCMS.Infrastructure.Abstractions
             return query;
         }
 
-        public ValueTask<T> FindBy(string id, CancellationToken cancelToken = default)
+        public async ValueTask<T> FindBy(string id, CancellationToken cancelToken = default)
         {
-            var result = _set.FindAsync(id);
+            var result = await _set
+                .SingleOrDefaultAsync(x => x.Id.Equals(id,
+                    StringComparison.InvariantCultureIgnoreCase), cancelToken)
+                .ConfigureAwait(false);
             return result;
         }
 
-        public ValueTask<T> FindBy(int id, CancellationToken canelToken = default)
+        public async ValueTask<T> FindBy(int id, CancellationToken canelToken = default)
         {
-            return _set.FindAsync(id);
+            return await _set.FindAsync(id, canelToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -226,9 +229,9 @@ namespace CatalyaCMS.Infrastructure.Abstractions
             _db.Entry(entity).State = EntityState.Modified;
         }
 
-        public int Commit()
+        public async Task<int> Commit(CancellationToken token)
         {
-            return _db.SaveChanges();
+            return await _db.SaveChangesAsync(token).ConfigureAwait(false);
         }
     }
 }
