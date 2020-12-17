@@ -6,8 +6,8 @@ namespace CatalyaCMS.Domain.ApiModels.School
 {
     public class SchoolCreateModel
     {
-        public string SchoolTitle { get; internal set; }
-        public string SchoolMotto { get; internal set; }
+        public string SchoolTitle { get; set; }
+        public string SchoolMotto { get; set; }
         public bool Activation { get; set; }
     }
 }

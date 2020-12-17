@@ -53,12 +53,10 @@ namespace CatalyaCMS.Domain.DomainModels
         {
             if(model is null) return;
 
-            if (!string.IsNullOrEmpty(model.Title) && !string.IsNullOrEmpty(model.PicturePath))
-            {
-                Title = model.Title;
-                PicturePath = model.PicturePath;
-                Description = model.Description;
-            }
+            if (string.IsNullOrEmpty(model.Title) || string.IsNullOrEmpty(model.PicturePath)) return;
+            Title = model.Title;
+            PicturePath = model.PicturePath;
+            Description = model.Description;
         }
     }
 }
