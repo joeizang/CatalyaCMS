@@ -4,7 +4,7 @@ Content Management Systems for schools and small NGOs to use for internal org si
 
 ### Acknowledgements
 
-[JetBrains](https://www.jetbrains.com/?from=CatalyaCMS) kindly provides CatalyaCMS with a free open-source licences for their world class products.
+[JetBrains](https://www.jetbrains.com/?from=CatalyaCMS) kindly provides CatalyaCMS with a free open-source licence for their world class products.
 
 - **Resharper** makes Visual Studio a much better IDE
 - **Rider** is fast & powerful cross platform .NET IDE
