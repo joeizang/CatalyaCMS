@@ -9,6 +9,7 @@ using CatalyaCMS.Infrastructure.Context;
 using CatalyaCMS.Infrastructure.Queries.Articles;
 using CatalyaCMS.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 
 namespace CatalyaCMS.Api
@@ -30,7 +31,7 @@ namespace CatalyaCMS.Api
         options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
       });
 
-      services.AddDefaultIdentityUI<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+      services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
           .AddEntityFrameworkStores<SiteDbContext>();
 
       services.AddIdentityServer()
