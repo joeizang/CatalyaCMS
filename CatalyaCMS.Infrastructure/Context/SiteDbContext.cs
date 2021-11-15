@@ -20,11 +20,6 @@ namespace CatalyaCMS.Infrastructure.Context
 
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-      base.OnConfiguring(optionsBuilder);
-    }
-
     public DbSet<Article> Articles { get; set; }
 
     public DbSet<Asset> Assets { get; set; }
