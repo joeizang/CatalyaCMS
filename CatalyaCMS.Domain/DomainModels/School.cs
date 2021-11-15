@@ -41,7 +41,6 @@ public class School : BaseEntity
 
     public string Title { get; set; }
     public string Motto { get; private set; }
-    public string motto { get; set; }
 
     public DateTimeOffset DateEstablished { get; set; }
 
