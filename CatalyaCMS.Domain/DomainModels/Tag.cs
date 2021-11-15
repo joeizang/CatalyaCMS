@@ -7,9 +7,14 @@ namespace CatalyaCMS.Domain.DomainModels
 {
     public class Tag : BaseEntity
     {
-        public Tag()
+        private Tag()
         {
             ArticleTags = new List<ArticleTags>();
+        }
+
+        public Tag(string tagName)
+        {
+            List<ArticleTags> ArticleTags = new();
         }
 
         public Tag(DateTimeOffset createdDate, bool delete = false)
